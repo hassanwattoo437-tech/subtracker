@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SubTrackr — Stop Wasting Money on Forgotten Subscriptions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1424;
+    --bg3: #141930;
+    --card: #131827;
+    --card2: #1a2035;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --accent: #4f8ef7;
+    --accent2: #7c6ff7;
+    --accent3: #3dd68c;
+    --accent4: #f7934f;
+    --text: #e8eaf0;
+    --text2: #8b90a0;
+    --text3: #5a6070;
+    --danger: #f7604f;
+    --warn: #f7c24f;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-lg: 20px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%;
+    height: 68px;
+    background: rgba(10,14,26,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 22px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-size: 15px; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-actions { display: flex; gap: 12px; align-items: center; }
+  .btn-ghost {
+    padding: 8px 20px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border2); background: transparent;
+    color: var(--text2); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; cursor: pointer; transition: all .2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-primary {
+    padding: 9px 22px; border-radius: var(--radius-sm);
+    background: var(--accent); border: none;
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s;
+  }
+  .btn-primary:hover { background: #3a7de8; transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 120px 5% 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-glow {
+    position: absolute; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border-radius: 100px;
+    background: rgba(79,142,247,0.1);
+    border: 1px solid rgba(79,142,247,0.2);
+    color: var(--accent); font-size: 13px; font-weight: 500;
+    margin-bottom: 32px; position: relative; z-index: 1;
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(38px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.08;
+    max-width: 820px;
+    margin-bottom: 24px;
+    position: relative; z-index: 1;
+    letter-spacing: -1.5px;
+  }
+  h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    font-size: 19px; color: var(--text2); line-height: 1.6;
+    max-width: 520px; margin-bottom: 44px;
+    position: relative; z-index: 1;
+    font-weight: 300;
+  }
+  .hero-cta {
+    display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+    position: relative; z-index: 1; margin-bottom: 72px;
+  }
+  .btn-xl {
+    padding: 15px 36px; border-radius: var(--radius);
+    background: var(--accent); border: none;
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 16px; font-weight: 500; cursor: pointer;
+    transition: all .25s;
+    box-shadow: 0 0 40px rgba(79,142,247,0.25);
+  }
+  .btn-xl:hover { transform: translateY(-2px); box-shadow: 0 8px 50px rgba(79,142,247,0.35); }
+  .btn-xl-outline {
+    padding: 15px 36px; border-radius: var(--radius);
+    background: transparent; border: 1px solid var(--border2);
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 16px; font-weight: 400; cursor: pointer;
+    transition: all .25s;
+  }
+  .btn-xl-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .hero-stats {
+    display: flex; gap: 48px; flex-wrap: wrap; justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 700; color: var(--text);
+    display: block;
+  }
+  .stat-lbl { font-size: 13px; color: var(--text3); }
+
+  /* DASHBOARD PREVIEW */
+  .preview-section {
+    padding: 0 5% 100px;
+    display: flex; justify-content: center;
+  }
+  .dashboard-preview {
+    width: 100%; max-width: 1100px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .db-header {
+    background: var(--card2);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .db-dots { display: flex; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r{background:#ff5f57} .dot-y{background:#ffbd2e} .dot-g{background:#28c940}
+  .db-title-bar { flex: 1; display: flex; align-items: center; justify-content: center; }
+  .db-url { background: rgba(255,255,255,0.05); border-radius: 6px; padding: 5px 16px; font-size: 13px; color: var(--text3); }
+  .db-content { padding: 28px 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .db-summary-card {
+    background: var(--bg3); border-radius: var(--radius-sm);
+    border: 1px solid var(--border); padding: 18px 20px;
+  }
+  .db-summary-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .db-summary-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); }
+  .db-summary-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+  .db-main { grid-column: 1 / -1; display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+  .db-list { background: var(--bg3); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .db-list-header { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .db-list-title { font-size: 14px; font-weight: 500; }
+  .db-list-action { font-size: 12px; color: var(--accent); cursor: pointer; }
+  .sub-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  .sub-row:last-child { border-bottom: none; }
+  .sub-row:hover { background: rgba(255,255,255,0.02); }
+  .sub-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .sub-info { flex: 1; }
+  .sub-name { font-size: 14px; font-weight: 500; }
+  .sub-date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .sub-amount { font-size: 14px; font-weight: 500; }
+  .sub-badge {
+    font-size: 11px; padding: 3px 8px; border-radius: 100px;
+  }
+  .badge-soon { background: rgba(247,147,79,0.15); color: var(--accent4); }
+  .badge-ok { background: rgba(61,214,140,0.1); color: var(--accent3); }
+  .db-calendar { background: var(--bg3); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .cal-header { padding: 16px 18px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 500; }
+  .cal-grid { padding: 14px; display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .cal-day-label { font-size: 11px; color: var(--text3); text-align: center; padding: 4px 0; }
+  .cal-day {
+    aspect-ratio: 1; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--text3); cursor: default;
+  }
+  .cal-day.has-sub { background: rgba(79,142,247,0.12); color: var(--accent); font-weight: 500; }
+  .cal-day.today { background: var(--accent); color: #fff; font-weight: 600; }
+  .cal-day.empty { opacity: 0; }
+
+  /* FEATURES */
+  section { padding: 100px 5%; }
+  .section-label {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500; margin-bottom: 16px; text-align: center;
+  }
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 4vw, 46px);
+    font-weight: 700; text-align: center;
+    margin-bottom: 16px; letter-spacing: -1px;
+  }
+  .section-sub { text-align: center; color: var(--text2); font-size: 17px; max-width: 500px; margin: 0 auto 64px; line-height: 1.6; font-weight: 300; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px; max-width: 1100px; margin: 0 auto;
+  }
+  .feature-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: border-color .2s, transform .2s;
+  }
+  .feature-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+  .feature-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 18px;
+  }
+  .feature-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 600; margin-bottom: 10px;
+  }
+  .feature-card p { color: var(--text2); font-size: 15px; line-height: 1.6; font-weight: 300; }
+  .icon-blue { background: rgba(79,142,247,0.12); }
+  .icon-green { background: rgba(61,214,140,0.1); }
+  .icon-amber { background: rgba(247,194,79,0.1); }
+  .icon-purple { background: rgba(124,111,247,0.1); }
+  .icon-red { background: rgba(247,96,79,0.1); }
+  .icon-teal { background: rgba(29,158,117,0.1); }
+
+  /* HOW IT WORKS */
+  .steps-section { background: var(--bg2); }
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 2px; max-width: 900px; margin: 0 auto;
+    background: var(--border); border-radius: var(--radius); overflow: hidden;
+  }
+  .step {
+    background: var(--card); padding: 40px 32px; text-align: center;
+  }
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 48px; font-weight: 800;
+    color: var(--accent); opacity: .3; line-height: 1;
+    margin-bottom: 16px;
+  }
+  .step h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+  .step p { color: var(--text2); font-size: 14px; line-height: 1.6; font-weight: 300; }
+
+  /* PRICING */
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 20px; max-width: 960px; margin: 0 auto;
+  }
+  .price-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    position: relative;
+    transition: transform .2s;
+  }
+  .price-card:hover { transform: translateY(-4px); }
+  .price-card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 0 40px rgba(79,142,247,0.1);
+  }
+  .price-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #fff;
+    font-size: 12px; font-weight: 500; padding: 4px 14px;
+    border-radius: 100px;
+  }
+  .price-name { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); margin-bottom: 12px; }
+  .price-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 42px; font-weight: 800; color: var(--text);
+    display: flex; align-items: flex-start; gap: 4px;
+  }
+  .price-val sup { font-size: 20px; margin-top: 8px; }
+  .price-val small { font-size: 15px; font-weight: 400; color: var(--text3); align-self: flex-end; margin-bottom: 6px; }
+  .price-desc { color: var(--text3); font-size: 14px; margin: 12px 0 24px; }
+  .price-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+  .price-features li { font-size: 14px; color: var(--text2); display: flex; align-items: center; gap: 10px; }
+  .check { color: var(--accent3); font-size: 14px; }
+  .cross { color: var(--text3); font-size: 14px; }
+
+  /* TESTIMONIALS */
+  .testi-grid {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 20px; max-width: 1000px; margin: 0 auto;
+  }
+  .testi-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px;
+  }
+  .testi-stars { color: #f7c24f; font-size: 14px; margin-bottom: 16px; letter-spacing: 2px; }
+  .testi-text { color: var(--text2); font-size: 15px; line-height: 1.7; font-weight: 300; margin-bottom: 20px; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600;
+  }
+  .testi-name { font-size: 14px; font-weight: 500; }
+  .testi-role { font-size: 12px; color: var(--text3); }
+
+  /* FAQ */
+  .faq-section { background: var(--bg2); }
+  .faq-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 2px; border-radius: var(--radius); overflow: hidden; background: var(--border); }
+  .faq-item { background: var(--card); }
+  .faq-q {
+    padding: 22px 24px; display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-size: 15px; font-weight: 500; transition: background .15s;
+  }
+  .faq-q:hover { background: var(--card2); }
+  .faq-icon { font-size: 18px; color: var(--text3); transition: transform .3s; }
+  .faq-a { padding: 0 24px; max-height: 0; overflow: hidden; transition: max-height .3s ease, padding .3s; }
+  .faq-item.open .faq-a { max-height: 200px; padding: 0 24px 22px; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+  .faq-a p { color: var(--text2); font-size: 14px; line-height: 1.7; font-weight: 300; }
+
+  /* CTA SECTION */
+  .cta-section {
+    text-align: center; padding: 120px 5%;
+    position: relative; overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute; width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(79,142,247,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .cta-section h2 { position: relative; z-index: 1; margin-bottom: 16px; }
+  .cta-section p { position: relative; z-index: 1; color: var(--text2); font-size: 17px; margin-bottom: 40px; font-weight: 300; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 60px 5% 40px;
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+  }
+  .footer-brand p { color: var(--text3); font-size: 14px; line-height: 1.7; margin-top: 14px; font-weight: 300; max-width: 260px; }
+  .footer-col h4 { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 16px; text-transform: uppercase; letter-spacing: .06em; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a { color: var(--text3); text-decoration: none; font-size: 14px; transition: color .2s; }
+  .footer-col a:hover { color: var(--text2); }
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding: 24px 5%; display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-bottom p { font-size: 13px; color: var(--text3); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7);
+    display: none; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    width: 100%; max-width: 480px;
+    padding: 40px;
+    position: relative;
+    animation: modalIn .25s ease;
+  }
+  @keyframes modalIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .modal-close {
+    position: absolute; top: 16px; right: 20px;
+    background: none; border: none; font-size: 22px;
+    color: var(--text3); cursor: pointer; line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal h3 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .modal-sub { color: var(--text3); font-size: 14px; margin-bottom: 28px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 11px 14px;
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    transition: border-color .2s;
+  }
+  .form-group input:focus, .form-group select:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .btn-submit {
+    width: 100%; padding: 13px;
+    background: var(--accent); border: none; border-radius: var(--radius-sm);
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 500; cursor: pointer; transition: all .2s;
+    margin-top: 8px;
+  }
+  .btn-submit:hover { background: #3a7de8; }
+
+  /* DASHBOARD PAGE */
+  .dashboard-page { display: none; min-height: 100vh; padding: 88px 0 0; }
+  .dashboard-page.active { display: block; }
+  .landing-page.hidden { display: none; }
+  .db-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 68px); }
+  .sidebar {
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky; top: 68px; height: calc(100vh - 68px);
+    overflow-y: auto;
+  }
+  .sidebar-nav { list-style: none; padding: 0 12px; display: flex; flex-direction: column; gap: 2px; }
+  .sidebar-nav li a, .sidebar-nav li button {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; border-radius: var(--radius-sm);
+    color: var(--text2); text-decoration: none; font-size: 14px;
+    background: none; border: none; cursor: pointer; width: 100%;
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .sidebar-nav li a:hover, .sidebar-nav li button:hover { background: var(--bg3); color: var(--text); }
+  .sidebar-nav li.active a, .sidebar-nav li.active button { background: rgba(79,142,247,0.1); color: var(--accent); }
+  .nav-icon { font-size: 16px; width: 20px; }
+  .sidebar-section { padding: 20px 24px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--text3); }
+  .main-content { padding: 32px; background: var(--bg); }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .page-sub { color: var(--text3); font-size: 14px; margin-bottom: 28px; }
+  .summary-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+  .s-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px;
+  }
+  .s-card-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+  .s-card-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; }
+  .s-card-trend { font-size: 12px; margin-top: 4px; }
+  .trend-up { color: var(--danger); }
+  .trend-dn { color: var(--accent3); }
+  .content-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+  .panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .panel-header {
+    padding: 18px 20px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .panel-title { font-size: 15px; font-weight: 500; }
+  .panel-action {
+    font-size: 13px; color: var(--accent); cursor: pointer;
+    background: none; border: 1px solid rgba(79,142,247,0.3);
+    padding: 6px 14px; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; transition: all .2s;
+  }
+  .panel-action:hover { background: rgba(79,142,247,0.1); }
+  .sub-table { width: 100%; border-collapse: collapse; }
+  .sub-table th {
+    padding: 10px 20px; text-align: left; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .06em; color: var(--text3);
+    border-bottom: 1px solid var(--border);
+  }
+  .sub-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .sub-table tr:last-child td { border-bottom: none; }
+  .sub-table tr:hover td { background: rgba(255,255,255,0.01); }
+  .status-badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 100px; font-weight: 500;
+  }
+  .status-active { background: rgba(61,214,140,0.1); color: var(--accent3); }
+  .status-trial { background: rgba(247,194,79,0.1); color: var(--warn); }
+  .status-due { background: rgba(247,96,79,0.1); color: var(--danger); }
+  .row-actions { display: flex; gap: 6px; }
+  .btn-edit, .btn-delete {
+    padding: 4px 10px; border-radius: 6px; font-size: 12px;
+    cursor: pointer; border: 1px solid;
+    font-family: 'DM Sans', sans-serif; transition: all .2s;
+  }
+  .btn-edit { border-color: var(--border2); color: var(--text2); background: transparent; }
+  .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-delete { border-color: var(--border); color: var(--text3); background: transparent; }
+  .btn-delete:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* UPCOMING REMINDERS PANEL */
+  .reminder-list { padding: 8px 0; }
+  .reminder-item {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 14px; align-items: center;
+  }
+  .reminder-item:last-child { border-bottom: none; }
+  .reminder-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; }
+  .reminder-info { flex: 1; }
+  .reminder-name { font-size: 14px; font-weight: 500; }
+  .reminder-date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .reminder-amount { font-size: 14px; font-weight: 500; }
+
+  /* SPENDING CHART */
+  .chart-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-top: 20px; }
+  .chart-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .chart-label { font-size: 13px; color: var(--text2); width: 80px; flex-shrink: 0; }
+  .chart-track { flex: 1; background: var(--bg3); border-radius: 100px; height: 8px; overflow: hidden; }
+  .chart-fill { height: 100%; border-radius: 100px; transition: width .8s ease; }
+  .chart-val { font-size: 13px; color: var(--text2); width: 50px; text-align: right; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 32px; right: 32px; z-index: 300;
+    background: var(--card2); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); padding: 14px 20px;
+    font-size: 14px; color: var(--text);
+    transform: translateY(100px); opacity: 0;
+    transition: all .3s; pointer-events: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .pricing-grid, .steps-grid { grid-template-columns: 1fr; }
+    .testi-grid { grid-template-columns: 1fr; }
+    .db-content { grid-template-columns: 1fr; }
+    .db-main { grid-template-columns: 1fr; }
+    footer { grid-template-columns: 1fr 1fr; }
+    .summary-cards { grid-template-columns: repeat(2,1fr); }
+    .content-grid { grid-template-columns: 1fr; }
+    .db-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#" onclick="showLanding()">
+    <div class="logo-icon">💰</div>
+    SubTrackr
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How it Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-ghost" onclick="showDashboard()">Log in</button>
+    <button class="btn-primary" onclick="openSignup()">Start Free →</button>
+  </div>
+</nav>
+
+<!-- LANDING PAGE -->
+<div class="landing-page" id="landingPage">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Trusted by 12,000+ users — No credit card required
+  </div>
+  <h1>Stop Wasting Money on<br><span>Forgotten Subscriptions</span></h1>
+  <p class="hero-sub">Track, manage, and get smart reminders before you're charged. The average user saves $240/year.</p>
+  <div class="hero-cta">
+    <button class="btn-xl" onclick="openSignup()">Start Free — It's Free</button>
+    <button class="btn-xl-outline" onclick="showDashboard()">View Demo Dashboard →</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-num">$100M+</span>
+      <span class="stat-lbl">Subscriptions tracked</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">12K+</span>
+      <span class="stat-lbl">Active users</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">$240</span>
+      <span class="stat-lbl">Avg. annual savings</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">4.9★</span>
+      <span class="stat-lbl">User rating</span>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD PREVIEW -->
+<div class="preview-section">
+  <div class="dashboard-preview">
+    <div class="db-header">
+      <div class="db-dots">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <div class="db-title-bar">
+        <div class="db-url">app.subtrackr.io/dashboard</div>
+      </div>
+    </div>
+    <div class="db-content">
+      <div class="db-summary-card">
+        <div class="db-summary-label">Monthly Total</div>
+        <div class="db-summary-value">$127.94</div>
+        <div class="db-summary-sub">↑ $12 from last month</div>
+      </div>
+      <div class="db-summary-card">
+        <div class="db-summary-label">Active Subs</div>
+        <div class="db-summary-value">9</div>
+        <div class="db-summary-sub">2 trials ending soon</div>
+      </div>
+      <div class="db-summary-card">
+        <div class="db-summary-label">Due This Week</div>
+        <div class="db-summary-value" style="color:var(--accent4)">3</div>
+        <div class="db-summary-sub">Next: Netflix in 2 days</div>
+      </div>
+      <div class="db-main">
+        <div class="db-list">
+          <div class="db-list-header">
+            <span class="db-list-title">Your Subscriptions</span>
+            <span class="db-list-action">+ Add New</span>
+          </div>
+          <div class="sub-row">
+            <div class="sub-icon" style="background:rgba(229,9,20,0.1);font-size:18px">🎬</div>
+            <div class="sub-info">
+              <div class="sub-name">Netflix</div>
+              <div class="sub-date">Renews May 6, 2025</div>
+            </div>
+            <div style="text-align:right">
+              <div class="sub-amount">$15.49</div>
+              <span class="sub-badge badge-soon">2 days</span>
+            </div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-icon" style="background:rgba(30,215,96,0.1);font-size:18px">🎵</div>
+            <div class="sub-info">
+              <div class="sub-name">Spotify</div>
+              <div class="sub-date">Renews May 12, 2025</div>
+            </div>
+            <div style="text-align:right">
+              <div class="sub-amount">$9.99</div>
+              <span class="sub-badge badge-ok">8 days</span>
+            </div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-icon" style="background:rgba(79,142,247,0.1);font-size:18px">☁️</div>
+            <div class="sub-info">
+              <div class="sub-name">iCloud 200GB</div>
+              <div class="sub-date">Renews May 15, 2025</div>
+            </div>
+            <div style="text-align:right">
+              <div class="sub-amount">$2.99</div>
+              <span class="sub-badge badge-ok">11 days</span>
+            </div>
+          </div>
+          <div class="sub-row">
+            <div class="sub-icon" style="background:rgba(0,163,255,0.1);font-size:18px">🤖</div>
+            <div class="sub-info">
+              <div class="sub-name">ChatGPT Plus</div>
+              <div class="sub-date">Renews May 18, 2025</div>
+            </div>
+            <div style="text-align:right">
+              <div class="sub-amount">$20.00</div>
+              <span class="sub-badge badge-ok">14 days</span>
+            </div>
+          </div>
+        </div>
+        <div class="db-calendar">
+          <div class="cal-header">May 2025</div>
+          <div class="cal-grid">
+            <div class="cal-day-label">Su</div><div class="cal-day-label">Mo</div><div class="cal-day-label">Tu</div><div class="cal-day-label">We</div><div class="cal-day-label">Th</div><div class="cal-day-label">Fr</div><div class="cal-day-label">Sa</div>
+            <div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day today">4</div>
+            <div class="cal-day has-sub">5</div><div class="cal-day has-sub">6</div><div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div>
+            <div class="cal-day has-sub">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day has-sub">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day has-sub">18</div>
+            <div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-label">Everything You Need</div>
+  <h2>Built for real people,<br>not spreadsheets</h2>
+  <p class="section-sub">Every feature you need to take control of your recurring payments — nothing you don't.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon icon-blue">🔔</div>
+      <h3>Smart Reminders</h3>
+      <p>Get notified 1, 3, or 7 days before any charge hits. Email + browser notifications. Never get surprised again.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-green">📊</div>
+      <h3>Spending Analytics</h3>
+      <p>See exactly where your money goes. Monthly totals, yearly projections, category breakdowns, and trend tracking.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-amber">📅</div>
+      <h3>Renewal Calendar</h3>
+      <p>Visual calendar shows all upcoming renewals at a glance. Click any date to see what's due and manage it.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-purple">⏱️</div>
+      <h3>Free Trial Tracker</h3>
+      <p>Never get charged for a trial you forgot. Track trial end dates with urgent alerts before conversion.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-red">🏷️</div>
+      <h3>Organize with Tags</h3>
+      <p>Tag subscriptions by category — entertainment, work tools, health, family. Filter and analyze by any group.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon icon-teal">📥</div>
+      <h3>CSV Import / Export</h3>
+      <p>Moving from a spreadsheet? Import everything in seconds. Export anytime for backups or custom analysis.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="steps-section">
+  <div class="section-label">Simple Setup</div>
+  <h2>Up and running in 3 minutes</h2>
+  <p class="section-sub">No complicated onboarding, no credit card required for the free plan.</p>
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Create your free account</h3>
+      <p>Sign up in 30 seconds. No credit card required for the free plan. Start tracking up to 3 subscriptions immediately.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Add your subscriptions</h3>
+      <p>Enter the name, price, and billing date for each subscription. Or import from a CSV to set up in bulk instantly.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Sit back and save money</h3>
+      <p>Get timely reminders before every charge. Review your spending dashboard. Cancel what you don't use.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-label">Simple Pricing</div>
+  <h2>Choose your plan</h2>
+  <p class="section-sub">Start free, upgrade when you love it. No hidden fees, cancel anytime.</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-name">Free</div>
+      <div class="price-val"><sup>$</sup>0 <small>/mo</small></div>
+      <p class="price-desc">Perfect for getting started</p>
+      <hr class="price-divider">
+      <ul class="price-features">
+        <li><span class="check">✓</span> Track up to 3 subscriptions</li>
+        <li><span class="check">✓</span> Email reminders</li>
+        <li><span class="check">✓</span> Spending dashboard</li>
+        <li><span class="check">✓</span> Renewal calendar</li>
+        <li><span class="cross">—</span> <span style="color:var(--text3)">Unlimited subscriptions</span></li>
+        <li><span class="cross">—</span> <span style="color:var(--text3)">CSV import/export</span></li>
+        <li><span class="cross">—</span> <span style="color:var(--text3)">Analytics & reports</span></li>
+      </ul>
+      <button class="btn-submit" onclick="openSignup()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text)">Get Started Free</button>
+    </div>
+    <div class="price-card featured">
+      <div class="price-badge">Most Popular</div>
+      <div class="price-name">Pro</div>
+      <div class="price-val"><sup>$</sup>3 <small>/mo</small></div>
+      <p class="price-desc">For power users who want full control</p>
+      <hr class="price-divider">
+      <ul class="price-features">
+        <li><span class="check">✓</span> Unlimited subscriptions</li>
+        <li><span class="check">✓</span> Smart multi-channel alerts</li>
+        <li><span class="check">✓</span> Full analytics & reports</li>
+        <li><span class="check">✓</span> CSV import/export</li>
+        <li><span class="check">✓</span> Free trial tracker</li>
+        <li><span class="check">✓</span> Custom categories & tags</li>
+        <li><span class="check">✓</span> Priority support</li>
+      </ul>
+      <button class="btn-submit" onclick="openSignup()">Start Pro Free Trial</button>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Lifetime</div>
+      <div class="price-val"><sup>$</sup>10 <small>once</small></div>
+      <p class="price-desc">Pay once, use forever</p>
+      <hr class="price-divider">
+      <ul class="price-features">
+        <li><span class="check">✓</span> Everything in Pro</li>
+        <li><span class="check">✓</span> Lifetime access</li>
+        <li><span class="check">✓</span> All future updates</li>
+        <li><span class="check">✓</span> No recurring fees ever</li>
+        <li><span class="check">✓</span> Premium support</li>
+        <li><span class="check">✓</span> Early access to features</li>
+        <li><span class="check">✓</span> Export & backup tools</li>
+      </ul>
+      <button class="btn-submit" onclick="openSignup()" style="background:linear-gradient(135deg,var(--accent2),var(--accent))">Get Lifetime Deal</button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--bg2);padding:100px 5%">
+  <div class="section-label">Social Proof</div>
+  <h2>People love SubTrackr</h2>
+  <p class="section-sub">Join thousands who've taken control of their subscription spending.</p>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"I had no idea I was spending $340/month on subscriptions. SubTrackr showed me in 10 minutes. Cancelled 4 immediately."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:rgba(79,142,247,0.15);color:var(--accent)">JM</div>
+        <div>
+          <div class="testi-name">Jake Morrison</div>
+          <div class="testi-role">Freelance Designer, Chicago</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"The free trial tracker is worth it alone. I forgot about a $49/mo SaaS trial and SubTrackr reminded me 3 days before. Saved me instantly."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:rgba(61,214,140,0.1);color:var(--accent3)">SR</div>
+        <div>
+          <div class="testi-name">Sarah Rodriguez</div>
+          <div class="testi-role">Product Manager, Austin</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"As a small business owner with 20+ SaaS tools, SubTrackr is essential. Clean UI, reliable reminders, exactly what I needed."</p>
+      <div class="testi-author">
+        <div class="testi-avatar" style="background:rgba(124,111,247,0.15);color:var(--accent2)">DP</div>
+        <div>
+          <div class="testi-name">Daniel Park</div>
+          <div class="testi-role">Agency Owner, New York</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="faq-section">
+  <div class="section-label">Common Questions</div>
+  <h2>Frequently asked questions</h2>
+  <p class="section-sub">Have more questions? Email us at hello@subtrackr.io</p>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Is SubTrackr really free to use?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a"><p>Yes! The free plan lets you track up to 3 subscriptions with email reminders and full dashboard access. No credit card required. Upgrade to Pro for unlimited subscriptions.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>How do you send reminders?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a"><p>We send email reminders 1, 3, or 7 days before a subscription renews — you choose the timing. Pro plan also includes browser push notifications.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Is my data secure and private?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a"><p>Absolutely. We never store your passwords or connect to your bank. You manually enter subscription details. All data is encrypted at rest and in transit.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Can I import from a spreadsheet?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a"><p>Yes, Pro plan supports CSV import and export. Download our template, fill in your subscriptions, and import everything in seconds.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>What's the Lifetime plan?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a"><p>The Lifetime deal gives you all Pro features forever for a one-time payment of $10. No monthly fees, no subscriptions (ironic, we know 😄). Includes all future updates.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Can I use SubTrackr for my business?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a"><p>Definitely. Pro and Lifetime plans are great for tracking SaaS tools, client subscriptions, and business software. For team/multi-user needs, contact us about enterprise pricing.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="section-label">Get Started Today</div>
+  <h2>Stop losing money on<br>forgotten subscriptions</h2>
+  <p>Join 12,000+ people who've taken control. Free to start, takes 3 minutes.</p>
+  <button class="btn-xl" onclick="openSignup()">Create Free Account →</button>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <a class="logo" href="#" onclick="showLanding()" style="margin-bottom:12px;display:inline-flex">
+      <div class="logo-icon">💰</div>
+      SubTrackr
+    </a>
+    <p>The simplest way to track, manage, and save money on your subscriptions. Trusted by thousands worldwide.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Product</h4>
+    <ul>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#how-it-works">How it Works</a></li>
+      <li><a href="#" onclick="showDashboard()">Demo</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Company</h4>
+    <ul>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Press Kit</a></li>
+      <li><a href="#">Careers</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Support</h4>
+    <ul>
+      <li><a href="#">Help Center</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2025 SubTrackr. All rights reserved.</p>
+  <p style="color:var(--text3);font-size:13px">Made with ❤️ for subscription-weary humans everywhere</p>
+</div>
+
+</div><!-- /landing-page -->
+
+<!-- DASHBOARD PAGE -->
+<div class="dashboard-page" id="dashboardPage">
+  <div class="db-layout">
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <div class="sidebar-section">Main</div>
+        <li class="active" id="nav-dashboard"><button onclick="switchTab('dashboard')"><span class="nav-icon">📊</span> Dashboard</button></li>
+        <li id="nav-subs"><button onclick="switchTab('subs')"><span class="nav-icon">🗂️</span> Subscriptions</button></li>
+        <li id="nav-calendar"><button onclick="switchTab('calendar')"><span class="nav-icon">📅</span> Calendar</button></li>
+        <li id="nav-analytics"><button onclick="switchTab('analytics')"><span class="nav-icon">📈</span> Analytics</button></li>
+        <div class="sidebar-section">Account</div>
+        <li id="nav-reminders"><button onclick="switchTab('reminders')"><span class="nav-icon">🔔</span> Reminders</button></li>
+        <li><button onclick="showLanding()"><span class="nav-icon">🏠</span> Back to Home</button></li>
+      </ul>
+    </aside>
+    <main class="main-content" id="mainContent">
+      <!-- Content injected by JS -->
+    </main>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="modal-overlay" id="signupModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('signupModal')">×</button>
+    <h3>Create your account</h3>
+    <p class="modal-sub">Free forever. No credit card required.</p>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" placeholder="Alex Johnson" id="signupName">
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" placeholder="you@email.com" id="signupEmail">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" placeholder="Choose a strong password">
+    </div>
+    <button class="btn-submit" onclick="handleSignup()">Create Free Account →</button>
+    <p style="text-align:center;font-size:13px;color:var(--text3);margin-top:16px">Already have an account? <span style="color:var(--accent);cursor:pointer" onclick="closeModal('signupModal');showDashboard()">Log in</span></p>
+  </div>
+</div>
+
+<!-- ADD SUBSCRIPTION MODAL -->
+<div class="modal-overlay" id="addSubModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('addSubModal')">×</button>
+    <h3>Add Subscription</h3>
+    <p class="modal-sub">Add a new recurring subscription to track.</p>
+    <div class="form-group">
+      <label>Service Name</label>
+      <input type="text" placeholder="Netflix, Spotify, AWS..." id="subName">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Monthly Price ($)</label>
+        <input type="number" placeholder="9.99" id="subPrice" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Next Billing Date</label>
+        <input type="date" id="subDate">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category</label>
+        <select id="subCategory">
+          <option>Entertainment</option>
+          <option>Productivity</option>
+          <option>Cloud / Storage</option>
+          <option>Health & Fitness</option>
+          <option>Finance</option>
+          <option>News & Media</option>
+          <option>Gaming</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Reminder</label>
+        <select id="subReminder">
+          <option>1 day before</option>
+          <option>3 days before</option>
+          <option>1 week before</option>
+          <option>2 weeks before</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Status</label>
+      <select id="subStatus">
+        <option value="active">Active</option>
+        <option value="trial">Free Trial</option>
+      </select>
+    </div>
+    <button class="btn-submit" onclick="saveSubscription()">Add Subscription →</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// === DATA ===
+let subscriptions = [
+  {id:1,name:'Netflix',price:15.49,date:'2025-05-06',category:'Entertainment',status:'active',reminder:'1 day before',icon:'🎬',color:'rgba(229,9,20,0.12)'},
+  {id:2,name:'Spotify',price:9.99,date:'2025-05-12',category:'Entertainment',status:'active',reminder:'3 days before',icon:'🎵',color:'rgba(30,215,96,0.12)'},
+  {id:3,name:'iCloud 200GB',price:2.99,date:'2025-05-15',category:'Cloud / Storage',status:'active',reminder:'1 day before',icon:'☁️',color:'rgba(79,142,247,0.12)'},
+  {id:4,name:'ChatGPT Plus',price:20.00,date:'2025-05-18',category:'Productivity',status:'active',reminder:'3 days before',icon:'🤖',color:'rgba(0,163,255,0.12)'},
+  {id:5,name:'Adobe CC',price:54.99,date:'2025-05-22',category:'Productivity',status:'active',reminder:'1 week before',icon:'🎨',color:'rgba(237,0,0,0.12)'},
+  {id:6,name:'GitHub Copilot',price:10.00,date:'2025-05-28',category:'Productivity',status:'trial',reminder:'3 days before',icon:'🧑‍💻',color:'rgba(36,41,47,0.3)'},
+  {id:7,name:'Disney+',price:7.99,date:'2025-06-01',category:'Entertainment',status:'trial',reminder:'1 week before',icon:'🏰',color:'rgba(17,60,120,0.2)'},
+  {id:8,name:'Notion',price:8.00,date:'2025-06-03',category:'Productivity',status:'active',reminder:'3 days before',icon:'📝',color:'rgba(255,255,255,0.05)'},
+  {id:9,name:'1Password',price:2.99,date:'2025-06-07',category:'Other',status:'active',reminder:'1 week before',icon:'🔐',color:'rgba(30,159,210,0.12)'},
+];
+
+let nextId = 10;
+let currentTab = 'dashboard';
+
+function totalMonthly() {
+  return subscriptions.reduce((s,x)=>s+x.price,0);
+}
+
+function daysUntil(dateStr) {
+  const d = new Date(dateStr), now = new Date();
+  now.setHours(0,0,0,0); d.setHours(0,0,0,0);
+  return Math.round((d - now) / 86400000);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = '✓ ' + msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+function openSignup() {
+  document.getElementById('signupModal').classList.add('active');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+function handleSignup() {
+  const name = document.getElementById('signupName').value;
+  if(!name) return;
+  closeModal('signupModal');
+  showDashboard();
+  showToast('Welcome to SubTrackr, ' + name + '!');
+}
+
+function showLanding() {
+  document.getElementById('landingPage').classList.remove('hidden');
+  document.getElementById('dashboardPage').classList.remove('active');
+  window.scrollTo(0,0);
+}
+function showDashboard() {
+  document.getElementById('landingPage').classList.add('hidden');
+  document.getElementById('dashboardPage').classList.add('active');
+  renderTab('dashboard');
+  document.getElementById('signupModal').classList.remove('active');
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  ['dashboard','subs','calendar','analytics','reminders'].forEach(t=>{
+    const el = document.getElementById('nav-'+t);
+    if(el) el.classList.remove('active');
+  });
+  const el = document.getElementById('nav-'+tab);
+  if(el) el.classList.add('active');
+  renderTab(tab);
+}
+
+function renderTab(tab) {
+  const mc = document.getElementById('mainContent');
+  if(tab==='dashboard') renderDashboard(mc);
+  else if(tab==='subs') renderSubs(mc);
+  else if(tab==='calendar') renderCalendar(mc);
+  else if(tab==='analytics') renderAnalytics(mc);
+  else if(tab==='reminders') renderReminders(mc);
+}
+
+function renderDashboard(mc) {
+  const total = totalMonthly();
+  const dueSoon = subscriptions.filter(s=>daysUntil(s.date)<=7).length;
+  const trials = subscriptions.filter(s=>s.status==='trial').length;
+  const annual = (total*12).toFixed(0);
+  mc.innerHTML = `
+  <div class="page-title">Dashboard</div>
+  <div class="page-sub">Welcome back! Here's your subscription overview.</div>
+  <div class="summary-cards">
+    <div class="s-card">
+      <div class="s-card-label">Monthly Total</div>
+      <div class="s-card-val">$${total.toFixed(2)}</div>
+      <div class="s-card-trend trend-up">↑ $12 from last month</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-label">Yearly Projection</div>
+      <div class="s-card-val">$${annual}</div>
+      <div class="s-card-trend" style="color:var(--text3)">Based on current subs</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-label">Due This Week</div>
+      <div class="s-card-val" style="color:${dueSoon>0?'var(--accent4)':'var(--accent3)'}">${dueSoon}</div>
+      <div class="s-card-trend" style="color:var(--text3)">Renewals in 7 days</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-label">Free Trials</div>
+      <div class="s-card-val" style="color:var(--warn)">${trials}</div>
+      <div class="s-card-trend" style="color:var(--text3)">Converting soon</div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">All Subscriptions</span>
+        <button class="panel-action" onclick="openAddSub()">+ Add New</button>
+      </div>
+      <table class="sub-table">
+        <thead><tr><th>Service</th><th>Price</th><th>Renews</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${subscriptions.map(s=>`
+          <tr>
+            <td><div style="display:flex;align-items:center;gap:10px">
+              <div style="width:30px;height:30px;border-radius:8px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:14px">${s.icon}</div>
+              <div><div style="font-weight:500">${s.name}</div><div style="font-size:12px;color:var(--text3)">${s.category}</div></div>
+            </div></td>
+            <td>$${s.price.toFixed(2)}</td>
+            <td><div>${formatDate(s.date)}</div><div style="font-size:12px;color:${daysUntil(s.date)<=3?'var(--accent4)':'var(--text3)'}">in ${daysUntil(s.date)} days</div></td>
+            <td><span class="status-badge ${s.status==='active'?'status-active':s.status==='trial'?'status-trial':''}">${s.status==='trial'?'Trial':'Active'}</span></td>
+            <td><div class="row-actions">
+              <button class="btn-edit" onclick="editSub(${s.id})">Edit</button>
+              <button class="btn-delete" onclick="deleteSub(${s.id})">Delete</button>
+            </div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Upcoming Renewals</span></div>
+        <div class="reminder-list">
+          ${subscriptions.sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,5).map(s=>`
+          <div class="reminder-item">
+            <div class="reminder-dot" style="background:${daysUntil(s.date)<=3?'var(--danger)':daysUntil(s.date)<=7?'var(--warn)':'var(--accent3)'}"></div>
+            <div class="reminder-info">
+              <div class="reminder-name">${s.name}</div>
+              <div class="reminder-date">${formatDate(s.date)} · in ${daysUntil(s.date)} days</div>
+            </div>
+            <div class="reminder-amount">$${s.price.toFixed(2)}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderSubs(mc) {
+  mc.innerHTML = `
+  <div class="page-title">Subscriptions</div>
+  <div class="page-sub">Manage all your recurring subscriptions.</div>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:20px">
+    <button class="panel-action" onclick="openAddSub()" style="font-size:14px;padding:10px 20px">+ Add Subscription</button>
+  </div>
+  <div class="panel">
+    <table class="sub-table">
+      <thead><tr><th>Service</th><th>Price/mo</th><th>Category</th><th>Next Renewal</th><th>Reminder</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        ${subscriptions.map(s=>`<tr>
+          <td><div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:15px">${s.icon}</div>
+            <span style="font-weight:500">${s.name}</span>
+          </div></td>
+          <td>$${s.price.toFixed(2)}</td>
+          <td><span style="font-size:13px;color:var(--text3)">${s.category}</span></td>
+          <td><div style="font-size:13px">${formatDate(s.date)}</div><div style="font-size:11px;color:${daysUntil(s.date)<=3?'var(--accent4)':'var(--text3)'}">in ${daysUntil(s.date)} days</div></td>
+          <td><span style="font-size:12px;color:var(--text3)">${s.reminder}</span></td>
+          <td><span class="status-badge ${s.status==='active'?'status-active':'status-trial'}">${s.status==='trial'?'Free Trial':'Active'}</span></td>
+          <td><div class="row-actions">
+            <button class="btn-edit" onclick="editSub(${s.id})">Edit</button>
+            <button class="btn-delete" onclick="deleteSub(${s.id})">Delete</button>
+          </div></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function renderCalendar(mc) {
+  const today = new Date();
+  const month = today.getMonth();
+  const year = today.getFullYear();
+  const firstDay = new Date(year,month,1).getDay();
+  const daysInMonth = new Date(year,month+1,0).getDate();
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  
+  // Build map of day → subs
+  const dayMap = {};
+  subscriptions.forEach(s=>{
+    const d = new Date(s.date);
+    if(d.getMonth()===month && d.getFullYear()===year) {
+      const day = d.getDate();
+      if(!dayMap[day]) dayMap[day] = [];
+      dayMap[day].push(s);
+    }
+  });
+
+  let calHTML = '';
+  let dayCount = 1;
+  for(let i=0;i<6;i++) {
+    calHTML += '<tr>';
+    for(let j=0;j<7;j++) {
+      const cellNum = i*7+j;
+      if(cellNum < firstDay || dayCount > daysInMonth) {
+        calHTML += '<td style="padding:8px;min-width:80px;min-height:70px;border:1px solid var(--border)"></td>';
+      } else {
+        const isToday = dayCount===today.getDate();
+        const hasSubs = dayMap[dayCount];
+        calHTML += `<td style="padding:8px;min-width:80px;min-height:70px;border:1px solid var(--border);vertical-align:top;background:${isToday?'rgba(79,142,247,0.06)':'transparent'}">
+          <div style="font-size:13px;font-weight:${isToday?'700':'400'};color:${isToday?'var(--accent)':'var(--text2)'};margin-bottom:4px">${dayCount}</div>
+          ${hasSubs?hasSubs.map(s=>`<div style="font-size:11px;background:${s.color};border-radius:4px;padding:2px 6px;margin-bottom:2px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.icon} ${s.name}</div>`).join(''):''}
+        </td>`;
+        dayCount++;
+      }
+    }
+    calHTML += '</tr>';
+    if(dayCount>daysInMonth) break;
+  }
+
+  mc.innerHTML = `
+  <div class="page-title">Calendar</div>
+  <div class="page-sub">${monthNames[month]} ${year} — subscription renewal calendar</div>
+  <div class="panel" style="overflow-x:auto">
+    <div class="panel-header"><span class="panel-title">${monthNames[month]} ${year}</span></div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<th style="padding:12px 8px;text-align:left;font-size:12px;color:var(--text3);border-bottom:1px solid var(--border)">${d}</th>`).join('')}</tr></thead>
+      <tbody>${calHTML}</tbody>
+    </table>
+  </div>`;
+}
+
+function renderAnalytics(mc) {
+  const cats = {};
+  subscriptions.forEach(s=>{ cats[s.category]=(cats[s.category]||0)+s.price; });
+  const maxCat = Math.max(...Object.values(cats));
+  const catColors = {'Entertainment':'var(--accent)','Productivity':'var(--accent2)','Cloud / Storage':'var(--accent3)','Health & Fitness':'var(--warn)','Other':'var(--text3)'};
+
+  mc.innerHTML = `
+  <div class="page-title">Analytics</div>
+  <div class="page-sub">Understand your subscription spending patterns.</div>
+  <div class="summary-cards">
+    <div class="s-card">
+      <div class="s-card-label">Monthly Total</div>
+      <div class="s-card-val">$${totalMonthly().toFixed(2)}</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-label">Annual Spend</div>
+      <div class="s-card-val">$${(totalMonthly()*12).toFixed(0)}</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-label">Avg Per Sub</div>
+      <div class="s-card-val">$${(totalMonthly()/subscriptions.length).toFixed(2)}</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-label">Most Expensive</div>
+      <div class="s-card-val" style="font-size:18px">${subscriptions.reduce((a,b)=>a.price>b.price?a:b).name}</div>
+    </div>
+  </div>
+  <div class="content-grid">
+    <div class="chart-panel">
+      <div class="panel-header" style="margin:-20px -20px 20px;border-radius:0"><span class="panel-title">Spending by Category</span></div>
+      ${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`
+      <div class="chart-bar-row">
+        <div class="chart-label" style="font-size:12px">${cat}</div>
+        <div class="chart-track">
+          <div class="chart-fill" style="width:${(amt/maxCat*100).toFixed(0)}%;background:${catColors[cat]||'var(--accent)'}"></div>
+        </div>
+        <div class="chart-val">$${amt.toFixed(2)}</div>
+      </div>`).join('')}
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Monthly Breakdown</span></div>
+      <div style="padding:16px">
+        ${subscriptions.sort((a,b)=>b.price-a.price).map(s=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+          <div style="font-size:16px">${s.icon}</div>
+          <div style="flex:1;font-size:13px">${s.name}</div>
+          <div style="font-size:13px;font-weight:500">$${s.price.toFixed(2)}</div>
+          <div style="font-size:11px;color:var(--text3);width:40px;text-align:right">${((s.price/totalMonthly())*100).toFixed(0)}%</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderReminders(mc) {
+  mc.innerHTML = `
+  <div class="page-title">Reminders</div>
+  <div class="page-sub">Upcoming notifications and alert settings.</div>
+  <div class="content-grid">
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">Upcoming Alerts</span></div>
+      <div class="reminder-list">
+        ${subscriptions.sort((a,b)=>new Date(a.date)-new Date(b.date)).map(s=>`
+        <div class="reminder-item">
+          <div class="reminder-dot" style="background:${daysUntil(s.date)<=3?'var(--danger)':daysUntil(s.date)<=7?'var(--warn)':'var(--accent3)'}"></div>
+          <div class="reminder-info">
+            <div class="reminder-name">${s.icon} ${s.name}</div>
+            <div class="reminder-date">${formatDate(s.date)} · ${s.reminder} reminder</div>
+          </div>
+          <div style="text-align:right">
+            <div class="reminder-amount">$${s.price.toFixed(2)}</div>
+            <div style="font-size:11px;color:${daysUntil(s.date)<=3?'var(--danger)':daysUntil(s.date)<=7?'var(--warn)':'var(--text3)'}">in ${daysUntil(s.date)} days</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div>
+      <div class="panel" style="padding:24px">
+        <div class="panel-header" style="margin:-24px -24px 20px;border-radius:0"><span class="panel-title">Email Settings</span></div>
+        <div class="form-group"><label>Notification Email</label><input type="email" value="you@email.com" style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;width:100%;color:var(--text);font-family:DM Sans,sans-serif"></div>
+        <div class="form-group"><label>Default Reminder Timing</label>
+          <select style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 14px;width:100%;color:var(--text);font-family:DM Sans,sans-serif">
+            <option>1 day before</option><option selected>3 days before</option><option>1 week before</option>
+          </select>
+        </div>
+        <button class="btn-submit" onclick="showToast('Reminder settings saved!')">Save Settings</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function formatDate(d) {
+  return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function openAddSub() {
+  // Set default date to next month
+  const d = new Date(); d.setMonth(d.getMonth()+1);
+  document.getElementById('subDate').value = d.toISOString().split('T')[0];
+  document.getElementById('addSubModal').classList.add('active');
+}
+
+function saveSubscription() {
+  const name = document.getElementById('subName').value;
+  const price = parseFloat(document.getElementById('subPrice').value);
+  const date = document.getElementById('subDate').value;
+  const category = document.getElementById('subCategory').value;
+  const reminder = document.getElementById('subReminder').value;
+  const status = document.getElementById('subStatus').value;
+  if(!name || !price || !date) { showToast('Please fill in all required fields'); return; }
+  const icons = {'Entertainment':'🎬','Productivity':'💼','Cloud / Storage':'☁️','Health & Fitness':'💪','Finance':'💳','News & Media':'📰','Gaming':'🎮','Other':'📦'};
+  subscriptions.push({id:nextId++,name,price,date,category,status,reminder,icon:icons[category]||'📦',color:'rgba(79,142,247,0.1)'});
+  closeModal('addSubModal');
+  showToast(name + ' added successfully!');
+  renderTab(currentTab);
+  document.getElementById('subName').value='';
+  document.getElementById('subPrice').value='';
+}
+
+function deleteSub(id) {
+  const s = subscriptions.find(x=>x.id===id);
+  subscriptions = subscriptions.filter(x=>x.id!==id);
+  showToast(s.name + ' removed.');
+  renderTab(currentTab);
+}
+
+function editSub(id) {
+  const s = subscriptions.find(x=>x.id===id);
+  document.getElementById('subName').value = s.name;
+  document.getElementById('subPrice').value = s.price;
+  document.getElementById('subDate').value = s.date;
+  document.getElementById('subCategory').value = s.category;
+  document.getElementById('subReminder').value = s.reminder;
+  document.getElementById('subStatus').value = s.status;
+  document.getElementById('addSubModal').classList.add('active');
+  deleteSub(id);
+}
+
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click', e=>{
+    if(e.target===overlay) overlay.classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
